@@ -48,9 +48,9 @@ G4VPhysicalVolume* MyRO::Build(){
 								GetInst().SetabsoThickness(1.8); // in mm
 								GetInst().SetgapThickness(10); // in mm
 
-								GetInst().SetcrystaltileLen(10);  //in mm
+								GetInst().SetcrystaltileLen(20);  //in mm
 
-								GetInst().SetcrystalThickness(10); //in mm
+								GetInst().SetcrystalThickness(20); //in mm
 								GetInst().SetpcbThickness(1.5);//in mm
 								GetInst().SetWorldMult(10.);//in mm
 								GetInst().InitDet(); // dont forget!!!

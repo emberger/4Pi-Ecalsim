@@ -52,11 +52,5 @@
 /gui/addButton viewer "Flush viewer (= refresh + update)" "/vis/viewer/flush"
 /gui/addButton viewer "Update scene" "/vis/scene/notifyHandlers"
 /run/printProgress 100
-/vis/geometry/set/colour Shield 1 1 0 0 0
-/vis/scene/notifyHandlers
-/vis/geometry/set/colour Shield 1 1 0 0 1
-/vis/scene/notifyHandlers
-/vis/geometry/set/colour Shieldlong 1 1 0 0 1
-/vis/scene/notifyHandlers
 /vis/viewer/set/picking false
 /vis/viewer/refresh

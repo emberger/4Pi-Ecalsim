@@ -111,6 +111,10 @@ Double_t m_tilesizeX;
 Double_t m_tilesizeY;
 Double_t m_calsizeXY;
 
+Double_t m_pcbThickness;
+Double_t m_crystalThickness;
+Double_t m_crystalsizeXY;
+
 Int_t m_segmentPh1;
 Int_t m_segmentPh2;
 
@@ -166,7 +170,15 @@ Double_t TilesizeY(){
 Double_t calsizeXY(){
 								return m_calsizeXY;
 }
-
+Double_t pcbThickness(){
+								return m_pcbThickness;
+}
+Double_t crystalThickness(){
+								return m_crystalThickness;
+}
+Double_t crystalsizeXY(){
+								return m_crystalsizeXY;
+}
 Double_t EnergyPhoton1(){
 								return m_EnergyPhoton1;
 }
@@ -230,7 +242,15 @@ void SetTilesizeY(Double_t tsY){
 void SetcalsizeXY(Double_t cxy){
 								m_calsizeXY=cxy;
 }
-
+void SetpcbThickness(Double_t pcbt){
+								m_pcbThickness=pcbt;
+}
+void SetcrystalThickness(Double_t cryst){
+								m_crystalThickness=cryst;
+}
+void SetcrystalsizeXY(Double_t cxy){
+								m_crystalsizeXY=cxy;
+}
 void SetEnergyPhoton1(Double_t eph1){
 								m_EnergyPhoton1=eph1;
 }

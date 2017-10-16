@@ -107,6 +107,7 @@ B4ROOTHit::B4ROOTHit() : TObject() {
 								m_EnergyDeposit = 0;
 								m_PhotonNr=0;
 								m_calorimeterSegment=0;
+
 }
 
 B4ROOTHit::B4ROOTHit(const B4ROOTHit& orig) : TObject(orig) {

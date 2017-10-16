@@ -195,6 +195,8 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
         auto defaultMaterial = G4Material::GetMaterial("Galactic");
         auto absorberMaterial = G4Material::GetMaterial("G4_Pb");
         auto gapMaterial = G4Material::GetMaterial("pen");
+        auto crystalMaterial = G4Material::GetMaterial("LYSO");
+        auto pcbMaterial = G4Material::GetMaterial("FR4");
 
         if ( !defaultMaterial || !absorberMaterial || !gapMaterial ) {
                 G4ExceptionDescription msg;
@@ -232,7 +234,7 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
         //
         auto calorimeterS
                 = new G4Box("Calorimeter", // its name
-                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetcalorThickness()/2+GetInst().GetcrystallayerThickness()); // its size
+                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetcalorThickness()/2); // its size
 
         auto calorLV
                 = new G4LogicalVolume(
@@ -497,8 +499,111 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
                 defaultMaterial,
                 "CrystalLayer"
                 );
+        G4ThreeVector crystal1(0*mm,0*mm,((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcrystallayerThickness()/2))*mm);
+        new G4PVPlacement(
+                0,                         // no rotation
+                crystal1,           // at (0,0,0)
+                CrystalLayerLV,                   // its logical volume
+                "CrystalP",             // its name
+                worldLV,                   // its mother  volume
+                false,                     // no boolean operation
+                1,                         // copy number
+                fCheckOverlaps);        // checking overlaps
 
 
+        G4ThreeVector crystal2(0*mm,0*mm,-((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcrystallayerThickness()/2))*mm);
+        new G4PVPlacement(
+                myrotation2,                                 // no rotation
+                crystal2,                   // at (0,0,0)
+                CrystalLayerLV,                           // its logical volume
+                "CrystalP",                     // its name
+                worldLV,                           // its mother  volume
+                false,                             // no boolean operation
+                1,                                 // copy number
+                fCheckOverlaps);                // checking overlaps
+
+        G4ThreeVector crystal3(0*mm,((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcrystallayerThickness()/2))*mm,0*mm);
+        new G4PVPlacement(
+                myrotation3,                                         // no rotation
+                crystal3,                           // at (0,0,0)
+                CrystalLayerLV,                                   // its logical volume
+                "CrystalP",                             // its name
+                worldLV,                                   // its mother  volume
+                false,                                     // no boolean operation
+                1,                                         // copy number
+                fCheckOverlaps);                        // checking overlaps
+
+        G4ThreeVector crystal4(0*mm,-((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcrystallayerThickness()/2))*mm,0*mm);
+        new G4PVPlacement(
+                myrotation4,                                                 // no rotation
+                crystal4,                                   // at (0,0,0)
+                CrystalLayerLV,                                           // its logical volume
+                "CrystalP",                                     // its name
+                worldLV,                                           // its mother  volume
+                false,                                             // no boolean operation
+                1,                                                 // copy number
+                fCheckOverlaps);                                // checking overlaps
+
+        G4ThreeVector crystal5(((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcrystallayerThickness()/2))*mm,0*mm,0*mm);
+        new G4PVPlacement(
+                myrotation5,                                 // no rotation
+                crystal5,                   // at (0,0,0)
+                CrystalLayerLV,                           // its logical volume
+                "CrystalP",                     // its name
+                worldLV,                           // its mother  volume
+                false,                             // no boolean operation
+                1,                                 // copy number
+                fCheckOverlaps);                // checking overlaps
+
+        G4ThreeVector crystal6(-((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcrystallayerThickness()/2))*mm,0*mm,0*mm);
+        new G4PVPlacement(
+                myrotation6,                                         // no rotation
+                crystal6,                           // at (0,0,0)
+                CrystalLayerLV,                                   // its logical volume
+                "CrystalP",                             // its name
+                worldLV,                                   // its mother  volume
+                false,                                     // no boolean operation
+                1,                                         // copy number
+                fCheckOverlaps);                        // checking overlaps
+
+
+        auto CrystalS
+                = new G4Box("Crystal", GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetcrystalThickness()/2);
+        auto CrystalLV
+                = new G4LogicalVolume(
+                CrystalS,
+                crystalMaterial,
+                "Crystal"
+                );
+
+        new G4PVPlacement(
+                0,                         // no rotation
+                G4ThreeVector(0., 0., -GetInst().GetpcbThickness()/2),          // its position
+                CrystalLV,                // its logical volume
+                "Crystal",                    // its name
+                CrystalLayerLV,                   // its mother  volume
+                false,                     // no boolean operation
+                0,                         // copy number
+                fCheckOverlaps);           // checking overlaps
+
+        auto pcbS
+                = new G4Box("pcb", GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetpcbThickness()/2);
+        auto pcbLV
+                = new G4LogicalVolume(
+                pcbS,
+                pcbMaterial,
+                "pcb"
+                );
+
+        new G4PVPlacement(
+                0,                                 // no rotation
+                G4ThreeVector(0., 0., GetInst().GetcrystalThickness()/2),                  // its position
+                pcbLV,                        // its logical volume
+                "pcb",                            // its name
+                CrystalLayerLV,                           // its mother  volume
+                false,                             // no boolean operation
+                0,                                 // copy number
+                fCheckOverlaps);                   // checking overlaps
 
         //
         // Layer
