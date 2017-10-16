@@ -26,7 +26,8 @@ Double_t m_Z;
 Int_t m_calorimeterSegment;
 
 Double_t m_EnergyDeposit;
-Bool_t threedecay;
+Bool_t m_Threedecay;
+Bool_t m_CrystalHit;
 
 Int_t m_PhotonNr;
 
@@ -58,7 +59,10 @@ Int_t PhotNr(){
 								return m_PhotonNr;
 }
 Bool_t IsThreeDecay(){
-								return threedecay;
+								return m_Threedecay;
+}
+Bool_t IsCrystalHit(){
+								return m_CrystalHit;
 }
 
 
@@ -79,7 +83,10 @@ void SetEnergyDeposit(Double_t dep) {
 }
 
 void SetThreeDecay(){
-								threedecay=true;
+								m_Threedecay=true;
+}
+void SetCrystalHit(){
+								m_CrystalHit=true;
 }
 
 ClassDef(B4ROOTHit,1)

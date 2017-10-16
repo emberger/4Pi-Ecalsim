@@ -232,14 +232,14 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
         //
         auto calorimeterS
                 = new G4Box("Calorimeter", // its name
-                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetcalorThickness()/2); // its size
+                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetcalorThickness()/2+GetInst().GetcrystallayerThickness()); // its size
 
         auto calorLV
                 = new G4LogicalVolume(
                 calorimeterS,      // its solid
                 defaultMaterial,   // its material
                 "Calorimeter");    // its name
-        G4ThreeVector seg1(0*mm,0*mm,((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcalorThickness()/2)+GetInst().GetcrystallayerThickness())*mm);
+        G4ThreeVector seg1(0*mm,0*mm,((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcalorThickness()/2))*mm);
         new G4PVPlacement(
                 0,                 // no rotation
                 seg1,   // at (0,0,0)
@@ -481,6 +481,22 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
                 6,                                                                                                                                                         // copy number
                 fCheckOverlaps);
 
+
+
+
+        //
+        // Crystal layer
+        //
+
+        auto CrystalLayerS
+                = new G4Box("CrystalLayer",GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetcrystallayerThickness()/2);
+
+        auto CrystalLayerLV
+                =new G4LogicalVolume(
+                CrystalLayerS,
+                defaultMaterial,
+                "CrystalLayer"
+                );
 
 
 
