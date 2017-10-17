@@ -72,7 +72,7 @@ void SetX(G4int x);
 void SetY(G4int y);
 void SetZ(G4int z);
 void SetCalorSeg(G4int seg);
-void SetCrystalHit();
+
 
 
 // get methods
@@ -80,7 +80,7 @@ G4double GetEdep() const;
 G4double GetTrackLength() const;
 G4bool GetTouch();
 G4bool GetCellInfo();
-G4bool IsCrystalHit();
+
 G4int GetPhotonNumber();
 
 G4int GetX();
@@ -97,7 +97,7 @@ G4bool fTouched;      // Bool to select interesting cells
 G4bool fCellInfo;     // Bool to distinguish cell info from layered info and total accounting
 G4int Photon;
 
-G4bool fCrystalHit;    // Bool to distiguish crystal and plastic scintillator hits
+
 
 G4int Xpos;     //
 G4int Ypos;     // Coordinates to identify Calorimeter Cell
@@ -183,9 +183,7 @@ inline void B4cCalorHit::SetCalorSeg(G4int seg){
         CalSeg=seg;
 }
 
-inline void B4cCalorHit::SetCrystalHit(){
-        fCrystalHit=true;
-}
+
 
 inline G4int B4cCalorHit::GetX(){
         return Xpos;
@@ -201,9 +199,7 @@ inline G4int B4cCalorHit::GetCalorSeg(){
         return CalSeg;
 }
 
-inline G4bool B4cCalorHit::IsCrystalHit(){
-        return fCrystalHit;
-}
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 #endif

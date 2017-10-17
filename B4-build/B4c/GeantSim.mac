@@ -15,8 +15,8 @@
 /gun/position 0 0 0 mm
 /gun/direction 0 0 1.0
 /gun/particle pi0
-/gun/energy 500 MeV
-/run/beamOn 300
+/gun/energy 200 MeV
+/run/beamOn 500
 
 
 

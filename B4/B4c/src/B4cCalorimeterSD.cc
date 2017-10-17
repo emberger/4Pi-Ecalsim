@@ -46,11 +46,14 @@ B4cCalorimeterSD::B4cCalorimeterSD(
         const G4String& name,
         const G4String& hitsCollectionName,
         G4int nofCells,
+
         G4double tilesPerLayer,
         G4double cellsPerStrip)
         : G4VSensitiveDetector(name),
         fHitsCollection(nullptr),
         fNofCells(nofCells),
+
+        ROHitID(0),
         StilesPerLayer(tilesPerLayer),
         ScellsPerStrip(cellsPerStrip)
 {
@@ -80,7 +83,7 @@ void B4cCalorimeterSD::Initialize(G4HCofThisEvent* hce)
                 //create Hits
                 //Calculate number of collection cells, add additional ones for each layer and another one for total accounting
 
-                G4int nofEnt=(GetInst().GetfNofLayers() * (GetInst().GetnofTilesX() * GetInst().GetnofTilesY()))*2 + 1;
+                G4int nofEnt=10000;
 
 
                 for (G4int i=0; i<nofEnt; i++ ) {
@@ -131,31 +134,38 @@ G4bool B4cCalorimeterSD::ProcessHits(G4Step* step,
         // Get calorimeter cell id
         auto layerNumber = touchable->GetReplicaNumber(1);
 
-//  G4cout<<layerNumber<<G4endl;
+        auto LogicalVolume= ROhist->GetSolid()->GetName();
+
+
+        G4int Cell;
+        G4int Strip;
+        G4int Layer;
+        G4int CalorSeg;
 
 
 
-        //  //Get copynumbers to specify cell
+
+        //Get copynumbers to specify cell
         //
-        auto Cell=ROhist->GetReplicaNumber();
+        Cell=ROhist->GetReplicaNumber();
         //  auto CellV=ROhist-> GetVolume()->GetName();
 
-        auto Strip=ROhist->GetReplicaNumber(1);
+        Strip=ROhist->GetReplicaNumber(1);
         //  auto StripV=ROhist-> GetVolume(1)->GetName();
 
-        auto Layer=ROhist->GetReplicaNumber(3);
+        Layer=ROhist->GetReplicaNumber(3);
         //  auto LayerV=ROhist-> GetVolume(3)->GetName();
-        //std::cout<<"Z:"<<Layer<<" Y: "<<Strip<<" X: "<<Cell<<std::endl;
+        std::cout<<"Z:"<<Layer /*<<" Y: "<<Strip<<" X: "<<Cell*/<<std::endl;
 
-        auto CalorSeg=ROhist->GetReplicaNumber(4);
+        CalorSeg=ROhist->GetReplicaNumber(4);
         //std::cout<<"CalorSeg: "<<CalorSeg<<std::endl;
 
         //Calculate CellID
 
-        G4int ROCellID=(Layer)*StilesPerLayer+(Strip)*ScellsPerStrip+Cell;
-        G4int ROLayerID=fNofCells*StilesPerLayer+Layer;
+        //G4int ROCellID=(Layer)*StilesPerLayer+(Strip)*ScellsPerStrip+Cell;
+        //G4int ROLayerID=fNofCells*StilesPerLayer+Layer;
 
-        auto hit=(*fHitsCollection)[ROCellID];
+        auto hit=(*fHitsCollection)[ROHitID];
         if ( !hit ) {
                 G4ExceptionDescription msg;
                 msg << "Cannot access Gap hit " << layerNumber;
@@ -179,6 +189,7 @@ G4bool B4cCalorimeterSD::ProcessHits(G4Step* step,
                 hit->SetY(Strip);
                 hit->SetZ(Layer);
                 hit->SetCalorSeg(CalorSeg);
+
         }
         //Add energydeposition for layered accounting
         // hitLayer->Add(edep,stepLength);
@@ -196,6 +207,9 @@ G4bool B4cCalorimeterSD::ProcessHits(G4Step* step,
                 hitTotal->SetY(0.); //
                 hitTotal->SetTouch();
         }
+        std::cout<<"HitID: "<<ROHitID<<std::endl;
+        ROHitID++;
+
         return true;
 }
 
@@ -211,6 +225,7 @@ void B4cCalorimeterSD::EndOfEvent(G4HCofThisEvent*)
                         << " hits in the tracker chambers: " << G4endl;
                 for ( G4int i=0; i<nofHits; i++ ) (*fHitsCollection)[i]->Print();
         }
+        ROHitID=0;
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

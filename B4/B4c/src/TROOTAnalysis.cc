@@ -21,8 +21,9 @@ TROOTAnalysis::TROOTAnalysis(TChain* ch){
         tiledimY=Cevent->TilesizeY();
         calsizeXY=Cevent->calsizeXY();
         nofLayers=Cevent->NumberOfLayers();
-        gunposition=Cevent->GunPos();
-        Double_t EcalSizeXYZ=calsizeXY/2+(GapThickness+AbsoThickness)*nofLayers;
+
+
+        //Double_t EcalSizeXYZ=calsizeXY/2+(GapThickness+AbsoThickness)*nofLayers;
 
         histsizeX=calsizeXY/tiledimX;
         histsizeY=calsizeXY/tiledimY;
@@ -198,7 +199,7 @@ void TROOTAnalysis::SampleFromHIst(){
         Double_t energy;
         Double_t cos_theta;
 
-        TH2D * h1 = (TH2D*)f->Get("pi0_energyAngle");
+        TH2D * hist1 = (TH2D*)f->Get("pi0_energyAngle");
 
         TH1D * sample1= new TH1D("sample1", "sample1", 100, 0, 1);
         TH1D * sample2= new TH1D("sample2", "sample2", 200, -1, 1);
@@ -211,7 +212,7 @@ void TROOTAnalysis::SampleFromHIst(){
         TH1D * check = new TH1D("Check", "check", 200, -1, 1);
         TH2D * fd = new TH2D("fd", "fd", 200,-2,2,200,-2,2);
         for(Int_t i=0; i<1000000; i++) {
-                h1->GetRandom2(energy, cos_theta);
+                hist1->GetRandom2(energy, cos_theta);
                 sample1->Fill(energy);
                 sample2->Fill(cos_theta);
 
@@ -231,9 +232,7 @@ void TROOTAnalysis::SampleFromHIst(){
                         check->Fill(TMath::Cos(MomentumDirection.Angle(BeamDirection)));
                 }
                 else if(cos_theta==0) {
-                        Double_t theta = TMath::ACos(cos_theta);
-
-
+                        //Double_t theta = TMath::ACos(cos_theta);
 
                         Double_t a=rndGen->Uniform(0,TMath::TwoPi());
 
@@ -429,6 +428,7 @@ void TROOTAnalysis::PlotProjection(Int_t distance){
 
 Bool_t TROOTAnalysis::CheckEvent(Int_t event){
         EcalTree->GetEntry(event);
+        gunposition=Cevent->GunPos();
 
         Int_t hitnr = Cevent->NHits();
         Double_t tmpE1=0;
@@ -840,7 +840,7 @@ void TROOTAnalysis::FitCOGsPion(Int_t event){
         TVector3 ph1_orig=Cevent->MomentumPh1().Unit();
         TVector3 ph2_orig=Cevent->MomentumPh2().Unit();
 
-        Int_t seg;
+        //Int_t seg;
 
 
         Fcn myfcn;

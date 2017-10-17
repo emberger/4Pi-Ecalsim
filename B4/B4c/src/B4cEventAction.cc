@@ -97,6 +97,7 @@ void B4cEventAction::SetStepHit(G4double x, G4double y, G4double z,G4int s, G4do
         hit.SetCalorimeterSegment(s);
         hit.SetEnergyDeposit(eDep);
         hit.SetPhotNr(phnr);
+
         //G4cout<<phnr<<" SetStepHit"<<hit.PhotNr()<<G4endl;
         this->CalEvent()->AddHit(hit);
         //G4cout << "Setting Hit! " << G4endl;
@@ -240,6 +241,8 @@ void B4cEventAction::EndOfEventAction(const G4Event* event)
         G4ThreeVector mom2=GetEInst().GetMomPh2();
         this->CalEvent()->SetMomentumPh2(mom2.getX(), mom2.getY(),mom2.getZ());
 
+
+
         //this->CalEvent()->SetMomentumPh2();
         //std::cout<<this->CalEvent()->EventNo()<<std::endl;
 
@@ -262,7 +265,12 @@ void B4cEventAction::EndOfEventAction(const G4Event* event)
 
                         auto tHit=(*gapHC)[i];
                         if (tHit->GetTouch()==true && tHit->GetCellInfo()==true) {
-                                this->SetStepHit(tHit->GetX(), tHit->GetY(), tHit->GetZ(), tHit->GetCalorSeg(),tHit->GetEdep(), tHit->GetPhotonNumber());
+                                this->SetStepHit(tHit->GetX(),
+                                                 tHit->GetY(),
+                                                 tHit->GetZ(),
+                                                 tHit->GetCalorSeg(),
+                                                 tHit->GetEdep(),
+                                                 tHit->GetPhotonNumber());
 
                                 // if(tHit->GetPhotonNumber()==1) {
                                 //

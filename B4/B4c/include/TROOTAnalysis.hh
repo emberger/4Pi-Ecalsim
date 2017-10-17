@@ -128,9 +128,7 @@ Double_t AbsoThickness;
 Double_t GapThickness;
 Double_t nofLayers;
 
-Double_t CrystalThickness;
-Double_t pcbThickness;
-Double_t crystalsizeXY;
+
 
 TVector3 gunposition;
 

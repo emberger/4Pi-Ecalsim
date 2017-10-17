@@ -43,14 +43,8 @@ void SetgapThickness(G4double gap);
 G4double GetgapThickness();
 
 
-void SetcrystaltileLen(G4double ctile);
-G4double GetcrystaltileLen();
 
-void SetcrystalThickness(G4double crystal);
-G4double GetcrystalThickness();
 
-void SetpcbThickness(G4double pcb);
-G4double GetpcbThickness();
 
 void SetcalorSizeXY(G4double cs);
 G4double GetcalorSizeXY();
@@ -60,12 +54,11 @@ void SetWorldMult(G4double wm);
 G4double GetnofTilesX();
 G4double GetnofTilesY();
 
-G4double GetnofcrystalTilesX();
-G4double GetnofcrystalTilesY();
+
 
 G4double GetlayerThickness();
 G4double GetcalorThickness();
-G4double GetcrystallayerThickness();
+
 G4double GettilesPerLayer();
 G4double GetWorldSizeXY();
 G4double GetWorldSizeZ();
@@ -86,12 +79,7 @@ G4double absoThickness;
 G4double gapThickness;
 G4double layerThickness;
 
-G4double crystalThickness;
-G4double crystaltileLen;
-G4double nofcrystalTilesX;
-G4double nofcrystalTilesY;
-G4double pcbThickness;
-G4double crystallayerThickness;
+
 
 G4double calorSizeXY;
 G4double calorThickness;

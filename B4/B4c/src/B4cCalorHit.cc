@@ -46,8 +46,8 @@ B4cCalorHit::B4cCalorHit()
         fEdep(0.),
         fTrackLength(0.),
         fTouched(false),
-        fCellInfo(false),
-        fCrystalHit(false)
+        fCellInfo(false)
+
 {
 }
 

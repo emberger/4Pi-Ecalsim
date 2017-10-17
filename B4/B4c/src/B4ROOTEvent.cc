@@ -20,6 +20,8 @@ B4ROOTEvent::B4ROOTEvent() {
 								m_NHits = 0;
 								m_GapThickness=0;
 								m_AbsoThickness=0;
+
+
 								m_Layerno=0;
 								m_tilesizeX=0;
 								m_tilesizeY=0;
@@ -108,6 +110,8 @@ B4ROOTHit::B4ROOTHit() : TObject() {
 								m_PhotonNr=0;
 								m_calorimeterSegment=0;
 
+
+
 }
 
 B4ROOTHit::B4ROOTHit(const B4ROOTHit& orig) : TObject(orig) {
@@ -118,6 +122,7 @@ B4ROOTHit::B4ROOTHit(const B4ROOTHit& orig) : TObject(orig) {
 								m_PhotonNr = orig.m_PhotonNr;
 								m_EnergyDeposit = orig.m_EnergyDeposit;
 								m_calorimeterSegment=orig.m_calorimeterSegment;
+
 }
 
 B4ROOTHit::~B4ROOTHit(){

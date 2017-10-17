@@ -10,11 +10,10 @@ void DetParams::InitDet(){
 								nofTilesX=calorSizeXY/tileLenX;
 								nofTilesY=calorSizeXY/tileLenY;
 
-								nofcrystalTilesX=calorSizeXY/crystaltileLen;
-								nofcrystalTilesY=calorSizeXY/crystaltileLen;
+
 
 								layerThickness=absoThickness+gapThickness;
-								crystallayerThickness=pcbThickness+crystalThickness;
+
 
 								calorThickness=fNofLayers*layerThickness;
 
@@ -65,34 +64,6 @@ G4double DetParams::GetgapThickness(){
 }
 
 
-G4double DetParams::GetcrystallayerThickness(){
-								return crystallayerThickness;
-}
-
-void DetParams::SetcrystaltileLen(G4double ctile){
-								crystaltileLen=ctile;
-}
-
-G4double DetParams::GetcrystaltileLen(){
-								return crystaltileLen;
-}
-
-void DetParams::SetcrystalThickness(G4double crystal){
-								crystalThickness=crystal;
-}
-
-G4double DetParams::GetcrystalThickness(){
-								return crystalThickness;
-}
-
-void DetParams::SetpcbThickness(G4double pcb){
-								pcbThickness=pcb;
-}
-
-G4double DetParams::GetpcbThickness(){
-								return pcbThickness;
-}
-
 void DetParams::SetcalorSizeXY(G4double cs){
 								calorSizeXY=cs;
 }
@@ -113,6 +84,8 @@ G4double DetParams::GetnofTilesX(){
 G4double DetParams::GetnofTilesY(){
 								return nofTilesY;
 }
+
+
 G4double DetParams::GetlayerThickness(){
 								return layerThickness;
 }
