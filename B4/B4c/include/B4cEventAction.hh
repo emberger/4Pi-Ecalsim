@@ -60,7 +60,7 @@ B4cEventAction();
 virtual ~B4cEventAction();
 
 B4ROOTEvent* CalEvent();
-void SetStepHit(G4double x, G4double y, G4double z,G4int s, G4double eDep, G4int phnr);
+void SetStepHit(G4double x, G4double y, G4double z,G4int s, G4double eDep, G4int phnr, std::string part);
 virtual void  BeginOfEventAction(const G4Event* event);
 virtual void    EndOfEventAction(const G4Event* event);
 

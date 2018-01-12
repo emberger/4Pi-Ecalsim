@@ -52,11 +52,7 @@ class B4cCalorimeterSD : public G4VSensitiveDetector
 {
 public:
 B4cCalorimeterSD(const G4String& name,
-                 const G4String& hitsCollectionName,
-                 G4int nofCells,
-
-                 G4double tilesPerLayer,
-                 G4double cellsPerStrip);
+                 const G4String& hitsCollectionName);
 virtual ~B4cCalorimeterSD();
 
 // methods from base class
@@ -65,12 +61,15 @@ virtual G4bool ProcessHits(G4Step* step, G4TouchableHistory* history);
 virtual void   EndOfEvent(G4HCofThisEvent* hitCollection);
 
 private:
-B4cCalorHitsCollection* fHitsCollection;
-G4int fNofCells;
-G4int ROHitID;
+  B4cCalorHitsCollection* fHitsCollection;
+  G4double eges;
 
-G4double StilesPerLayer;
-G4double ScellsPerStrip;
+  G4int cellcounter;
+  G4int hitcounter;
+  G4int HitID;
+
+  std::map<G4int, G4int> cellmap;
+  std::map<G4int, G4int>::iterator it;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

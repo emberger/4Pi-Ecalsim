@@ -38,26 +38,18 @@ set(CMAKE_TARGET_DEFINITIONS_CXX
   "G4VIS_USE_OPENGLQT"
   "G4VIS_USE_OPENGLX"
   "G4_STORE_TRAJECTORY"
-  "QT_CORE_LIB"
-  "QT_GUI_LIB"
-  "QT_OPENGL_LIB"
-  "QT_PRINTSUPPORT_LIB"
-  "QT_WIDGETS_LIB"
   )
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/opt/root/5.34/include"
+  "/remote/pcilc9/software/ubu1604/root-5.34.36/include"
   "/home/iwsatlas1/emberger/Geant4/Current/4piSensitiveDetector_mod/B4/B4c/include"
   "/home/iwsatlas1/emberger/Geant4/Current/4piSensitiveDetector_mod/B4/B4c"
-  "/remote/pcilc7/software/Geant4/geant4.10.03.p01-install/include/Geant4"
-  "/usr/include/qt5"
-  "/usr/include/qt5/QtWidgets"
-  "/usr/include/qt5/QtGui"
-  "/usr/include/qt5/QtCore"
-  "/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64"
-  "/usr/include/qt5/QtPrintSupport"
-  "/usr/include/qt5/QtOpenGL"
+  "/remote/pcilc7/software/Geant4_10.3.3/geant4.10.03.p03-install/include/Geant4"
+  "/usr/include/qt4"
+  "/usr/include/qt4/QtCore"
+  "/usr/include/qt4/QtGui"
+  "/usr/include/qt4/QtOpenGL"
   )
 
 # Targets to which this target links.

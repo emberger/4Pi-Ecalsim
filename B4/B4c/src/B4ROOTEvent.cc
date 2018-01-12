@@ -14,50 +14,67 @@ TClonesArray* B4ROOTEvent::aHits = 0;
 
 B4ROOTEvent::B4ROOTEvent() {
 								if (!aHits) aHits = new TClonesArray("B4ROOTHit", 1000);
-								m_Hits = aHits;
-								m_EventNo = 0;
-								m_GapEnergy = 0;
-								m_NHits = 0;
-								m_GapThickness=0;
-								m_AbsoThickness=0;
+								m_Hits=aHits;
 
-
-								m_Layerno=0;
-								m_tilesizeX=0;
-								m_tilesizeY=0;
-								m_calsizeXY=0;
 								m_EnergyPhoton1=0;
 								m_EnergyPhoton2=0;
 								m_MomentumPh1.SetXYZ(0.,0.,0.);
 								m_MomentumPh2.SetXYZ(0.,0.,0.);
 								m_GunPos.SetXYZ(0.,0.,0.);
 
+
+								m_EventNo= 0;
+
+								m_GapEnergy= 0;
+
+								m_NHits= 0;
+
+								m_InnerAbsoThickness= 0;
+								m_InnerGapThickness= 0;
+								m_InnerLayerno= 0;
+								m_InnertilesizeX= 0;
+								m_InnertilesizeY= 0;
+								Innerabsofirst= true;
+
+								m_OuterAbsoThickness= 0;
+								m_OuterGapThickness= 0;
+								m_OuterLayerno= 0;
+								m_OutertilesizeX= 0;
+								m_OutertilesizeY= 0;
+								Outerabsofirst= true;
+
+								m_airgapThickness=0;
+								m_calsizeXY= 0;
 }
 
 B4ROOTEvent::B4ROOTEvent(const B4ROOTEvent& origEvent) : TObject(origEvent) {
 
-								//std::cout<<"CC called"<<std::endl;
-								m_Hits=origEvent.m_Hits;
-								m_EventNo=origEvent.m_EventNo;
-								m_GapEnergy=origEvent.m_GapEnergy;
-								m_NHits=origEvent.m_NHits;
-								m_GapThickness=origEvent.m_GapThickness;
-								m_AbsoThickness=origEvent.m_AbsoThickness;
-								m_Layerno=origEvent.m_Layerno;
-								m_tilesizeX=origEvent.m_tilesizeX;
-								m_tilesizeY=origEvent.m_tilesizeY;
+								m_InnerGapThickness=origEvent.m_InnerGapThickness;
+								m_InnerAbsoThickness=origEvent.m_InnerAbsoThickness;
+								m_InnerLayerno=origEvent.m_InnerLayerno;
+								m_InnertilesizeX=origEvent.m_InnertilesizeX;
+								m_InnertilesizeY=origEvent.m_InnertilesizeY;
+								Innerabsofirst=origEvent.Innerabsofirst;
+
+								m_OuterGapThickness=origEvent.m_OuterGapThickness;
+								m_OuterAbsoThickness=origEvent.m_OuterAbsoThickness;
+								m_OuterLayerno=origEvent.m_OuterLayerno;
+								m_OutertilesizeX=origEvent.m_OutertilesizeX;
+								m_OutertilesizeY=origEvent.m_OutertilesizeY;
+								Outerabsofirst=origEvent.Outerabsofirst;
+
 								m_calsizeXY=origEvent.m_calsizeXY;
+								m_airgapThickness=origEvent.m_airgapThickness;
 
 								m_EnergyPhoton1=origEvent.m_EnergyPhoton1;
 								m_EnergyPhoton2=origEvent.m_EnergyPhoton2;
 								m_MomentumPh1=origEvent.m_MomentumPh1;
 								m_MomentumPh2=origEvent.m_MomentumPh2;
 								m_GunPos=origEvent.m_GunPos;
-
-								m_segmentPh1=origEvent.m_segmentPh1;
-								m_segmentPh2=origEvent.m_segmentPh2;
-
-
+								m_Hits=origEvent.m_Hits;
+								m_EventNo=origEvent.m_EventNo;
+								m_GapEnergy=origEvent.m_GapEnergy;
+								m_NHits=origEvent.m_NHits;
 }
 
 B4ROOTEvent::~B4ROOTEvent() {
@@ -65,23 +82,35 @@ B4ROOTEvent::~B4ROOTEvent() {
 }
 
 void B4ROOTEvent::Clear(const Option_t*) {
-								//std::cout << "Clearing Event..." << std::endl;
-								m_EventNo = 0;
-								m_GapEnergy = 0;
-								m_NHits=0;
-								m_GapThickness=0;
-								m_AbsoThickness=0;
-								m_Layerno=0;
-								m_tilesizeX=0;
-								m_tilesizeY=0;
-								m_calsizeXY=0;
+
 								m_EnergyPhoton1=0;
 								m_EnergyPhoton2=0;
 								m_MomentumPh1.SetXYZ(0.,0.,0.);
 								m_MomentumPh2.SetXYZ(0.,0.,0.);
 								m_GunPos.SetXYZ(0.,0.,0.);
 								m_Hits->Clear();
-								//std::cout << "Clear done!" << std::endl;
+
+								m_EventNo= 0;
+
+								m_GapEnergy= 0;
+
+								m_NHits= 0;
+
+								m_InnerAbsoThickness= 0;
+								m_InnerGapThickness= 0;
+								m_InnerLayerno= 0;
+								m_InnertilesizeX= 0;
+								m_InnertilesizeY= 0;
+								Innerabsofirst= true;
+
+								m_OuterAbsoThickness= 0;
+								m_OuterGapThickness= 0;
+								m_OuterLayerno= 0;
+								m_OutertilesizeX= 0;
+								m_OutertilesizeY= 0;
+								Outerabsofirst= true;
+								m_airgapThickness=0.;
+								m_calsizeXY= 0;
 }
 void B4ROOTEvent::Reset(Option_t * /*option*/)
 {
@@ -107,8 +136,11 @@ B4ROOTHit::B4ROOTHit() : TObject() {
 								m_Y = 0;
 								m_Z = 0;
 								m_EnergyDeposit = 0;
+								m_calorimeterPart.clear();
 								m_PhotonNr=0;
 								m_calorimeterSegment=0;
+								m_radiusWeight=1;
+
 
 
 
@@ -118,9 +150,11 @@ B4ROOTHit::B4ROOTHit(const B4ROOTHit& orig) : TObject(orig) {
 								m_X = orig.m_X;
 								m_Y = orig.m_Y;
 								m_Z = orig.m_Z;
-								//std::cout<<"orig.Phot: "<<orig.m_PhotonNr<<std::endl;
+
 								m_PhotonNr = orig.m_PhotonNr;
 								m_EnergyDeposit = orig.m_EnergyDeposit;
+								m_calorimeterPart=orig.m_calorimeterPart;
+								m_radiusWeight=orig.m_radiusWeight;
 								m_calorimeterSegment=orig.m_calorimeterSegment;
 
 }

@@ -22,10 +22,11 @@ private:
 Double_t m_X;
 Double_t m_Y;
 Double_t m_Z;
-
+std::string m_calorimeterPart;
 Int_t m_calorimeterSegment;
-
 Double_t m_EnergyDeposit;
+
+Double_t m_radiusWeight;
 Bool_t m_Threedecay;
 
 
@@ -48,6 +49,9 @@ Double_t Z() const {
 								return m_Z;
 }
 
+std::string CalorimeterPart() const {
+								return m_calorimeterPart;
+}
 Int_t CalorimeterSegment() const {
 								return m_calorimeterSegment;
 }
@@ -55,6 +59,9 @@ Double_t EnergyDeposit() const {
 								return m_EnergyDeposit;
 }
 
+Double_t RadiusWeight() const {
+								return m_radiusWeight;
+}
 Int_t PhotNr(){
 								return m_PhotonNr;
 }
@@ -62,9 +69,8 @@ Bool_t IsThreeDecay(){
 								return m_Threedecay;
 }
 
-
-
 // Setters:
+
 void SetPhotNr(Int_t nr){
 								m_PhotonNr=nr;
 }
@@ -73,11 +79,21 @@ void SetCoordinates(Double_t x, Double_t y, Double_t z) {
 								m_X = x; m_Y = y; m_Z = z;
 }
 
+void SetCalorimeterPart(std::string s){
+								m_calorimeterPart=s;
+}
+
 void SetCalorimeterSegment(Int_t s){
 								m_calorimeterSegment=s;
 }
 void SetEnergyDeposit(Double_t dep) {
 								m_EnergyDeposit = dep;
+}
+
+void SetRadiusWeight(Double_t rad){
+
+								m_radiusWeight=1/rad;
+
 }
 
 void SetThreeDecay(){
@@ -100,15 +116,24 @@ Double_t m_GapEnergy;
 
 Int_t m_NHits;
 
-Double_t m_AbsoThickness;
-Double_t m_GapThickness;
-Double_t m_Layerno;
-Double_t m_tilesizeX;
-Double_t m_tilesizeY;
+Double_t m_InnerAbsoThickness;
+Double_t m_InnerGapThickness;
+Double_t m_InnerLayerno;
+Double_t m_InnertilesizeX;
+Double_t m_InnertilesizeY;
+Bool_t Innerabsofirst;
+
+Double_t m_OuterAbsoThickness;
+Double_t m_OuterGapThickness;
+Double_t m_OuterLayerno;
+Double_t m_OutertilesizeX;
+Double_t m_OutertilesizeY;
+Bool_t Outerabsofirst;
+
+Double_t m_airgapThickness;
+
 Double_t m_calsizeXY;
-
-
-
+Double_t m_PVesselThickness;
 
 Int_t m_segmentPh1;
 Int_t m_segmentPh2;
@@ -118,6 +143,10 @@ Double_t m_EnergyPhoton2;
 
 TVector3 m_MomentumPh1;
 TVector3 m_MomentumPh2;
+
+
+Double_t m_EnergyPrimary;
+
 TVector3 m_GunPos;
 
 
@@ -147,25 +176,60 @@ Double_t GapEnergy() const {
 								return m_GapEnergy;
 }
 
-Double_t AbsoThickness(){
-								return m_AbsoThickness;
+Double_t InnerAbsoThickness(){
+								return m_InnerAbsoThickness;
 }
-Double_t GapThickness(){
-								return m_GapThickness;
+Double_t InnerGapThickness(){
+								return m_InnerGapThickness;
 }
-Double_t NumberOfLayers(){
-								return m_Layerno;
+Double_t NumberOfInnerLayers(){
+								return m_InnerLayerno;
 }
-Double_t TilesizeX(){
-								return m_tilesizeX;
+Double_t InnerTilesizeX(){
+								return m_InnertilesizeX;
 }
-Double_t TilesizeY(){
-								return m_tilesizeY;
+Double_t InnerTilesizeY(){
+								return m_InnertilesizeY;
 }
+Bool_t GetInnerAbsFirst(){
+								return Innerabsofirst;
+}
+
+
+Double_t OuterAbsoThickness(){
+								return m_OuterAbsoThickness;
+}
+Double_t OuterGapThickness(){
+								return m_OuterGapThickness;
+}
+Double_t NumberOfOuterLayers(){
+								return m_OuterLayerno;
+}
+Double_t OuterTilesizeX(){
+								return m_OutertilesizeX;
+}
+Double_t OuterTilesizeY(){
+								return m_OutertilesizeY;
+}
+Bool_t GetOuterAbsFirst(){
+								return Outerabsofirst;
+}
+
+Double_t airgapThickness(){
+								return m_airgapThickness;
+}
+
 Double_t calsizeXY(){
 								return m_calsizeXY;
 }
 
+Double_t PVesselThickness(){
+								return m_PVesselThickness;
+}
+
+Double_t EnergyPrimary(){
+								return m_EnergyPrimary;
+}
 
 Double_t EnergyPhoton1(){
 								return m_EnergyPhoton1;
@@ -212,26 +276,61 @@ void SetGapEnergy(Double_t en) {
 								m_GapEnergy = en;
 }
 
-void SetAbsoThickness(Double_t at){
-								m_AbsoThickness=at;
+
+void SetInnerAbsoThickness(Double_t at){
+								m_InnerAbsoThickness=at;
 }
-void SetGapThickness(Double_t gt){
-								m_GapThickness=gt;
+void SetInnerGapThickness(Double_t gt){
+								m_InnerGapThickness=gt;
 }
-void SetNumberOfLayers(Double_t nol){
-								m_Layerno=nol;
+void SetNumberOfInnerLayers(Double_t nol){
+								m_InnerLayerno=nol;
 }
-void SetTilesizeX(Double_t tsX){
-								m_tilesizeX=tsX;
+void SetInnerTilesizeX(Double_t tsX){
+								m_InnertilesizeX=tsX;
 }
-void SetTilesizeY(Double_t tsY){
-								m_tilesizeY=tsY;
+void SetInnerTilesizeY(Double_t tsY){
+								m_InnertilesizeY=tsY;
 }
+
+void SetInnerAbsFirst(Bool_t cfg){
+								Innerabsofirst=cfg;
+}
+
+
+void SetOuterAbsoThickness(Double_t at){
+								m_OuterAbsoThickness=at;
+}
+void SetOuterGapThickness(Double_t gt){
+								m_OuterGapThickness=gt;
+}
+void SetNumberOfOuterLayers(Double_t nol){
+								m_OuterLayerno=nol;
+}
+void SetOuterTilesizeX(Double_t tsX){
+								m_OutertilesizeX=tsX;
+}
+void SetOuterTilesizeY(Double_t tsY){
+								m_OutertilesizeY=tsY;
+}
+void SetOuterAbsFirst(Bool_t cfg){
+								Outerabsofirst=cfg;
+}
+
+void SetairgapThickness(Double_t agt){
+								m_airgapThickness=agt;
+}
+
+void SetPVesselThickness(Double_t pt){
+								m_PVesselThickness=pt;
+}
+
 void SetcalsizeXY(Double_t cxy){
 								m_calsizeXY=cxy;
 }
-
-
+void SetEnergyPrimary(Double_t ep){
+								m_EnergyPrimary=ep;
+}
 void SetEnergyPhoton1(Double_t eph1){
 								m_EnergyPhoton1=eph1;
 }
@@ -242,13 +341,11 @@ void SetEnergyPhoton2(Double_t eph2){
 
 void SetMomentumPh1(Double_t mx1, Double_t my1, Double_t mz1){
 								m_MomentumPh1.SetXYZ(mx1, my1, mz1);
-
 }
 
 void SetMomentumPh2(Double_t mx2, Double_t my2, Double_t mz2){
 								m_MomentumPh2.SetXYZ(mx2, my2, mz2);
 }
-
 void SetGunPos(TVector3 gp){
 								m_GunPos=gp;
 }
@@ -260,6 +357,7 @@ void SetSegmentph1(Int_t p){
 void SetSegmentph2(Int_t p){
 								m_segmentPh2=p;
 }
+
 B4ROOTHit* AddHit(B4ROOTHit& cand);
 
 ClassDef(B4ROOTEvent,1)

@@ -70,8 +70,7 @@ int main(int argc,char** argv)
   //OPen ROOT file
 
 
-std::cout<<GetInst().GetfNofLayers()<<std::endl;
-	// Evaluate arguments
+
 
   if ( argc > 7 ) {
     PrintUsage();
@@ -128,6 +127,10 @@ std::cout<<GetInst().GetfNofLayers()<<std::endl;
   auto physicsList = new FTFP_BERT;
   runManager->SetUserInitialization(physicsList);
 
+  std::cout<<"default rangecut: "<<physicsList->GetDefaultCutValue()<<std::endl;
+  physicsList->SetDefaultCutValue(0.05*mm);
+  std::cout<<"new rangecut: "<<physicsList->GetDefaultCutValue()<<std::endl;
+  
   auto actionInitialization = new B4cActionInitialization();
   runManager->SetUserInitialization(actionInitialization);
 

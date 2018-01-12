@@ -89,12 +89,13 @@ B4ROOTEvent* B4cEventAction::CalEvent()
 }
 
 
-void B4cEventAction::SetStepHit(G4double x, G4double y, G4double z,G4int s, G4double eDep, G4int phnr)
+void B4cEventAction::SetStepHit(G4double x, G4double y, G4double z,G4int s, G4double eDep, G4int phnr,std::string part)
 {
         B4ROOTHit hit;
 
         hit.SetCoordinates(x, y, z);
         hit.SetCalorimeterSegment(s);
+                hit.SetCalorimeterPart(part);
         hit.SetEnergyDeposit(eDep);
         hit.SetPhotNr(phnr);
 
@@ -220,18 +221,30 @@ void B4cEventAction::EndOfEventAction(const G4Event* event)
         //fill ROOT Classes
 
         this->CalEvent()->SetEventNo(eventID);
-        this->CalEvent()->SetGapThickness(GetInst().GetgapThickness());
 
-        //std::cout<<"Gapthickness: "<<GetInst().GetgapThickness()<<std::endl;
-        //std::cout<<"Gapthickness: "<<this->CalEvent()->GapThickness()<<std::endl;
+        this->CalEvent()->SetInnerGapThickness(GetInst().GetInnergapThickness());
+        this->CalEvent()->SetInnerAbsoThickness(GetInst().GetInnerabsoThickness());
+        this->CalEvent()->SetNumberOfInnerLayers(GetInst().GetfNofInnerLayers());
+        this->CalEvent()->SetInnerTilesizeX(GetInst().GetInnertileLenX());
+        this->CalEvent()->SetInnerTilesizeY(GetInst().GetInnertileLenY());
+        this->CalEvent()->SetInnerAbsFirst(GetInst().GetInnerAbsFirst());
 
-        this->CalEvent()->SetAbsoThickness(GetInst().GetabsoThickness());
-        this->CalEvent()->SetNumberOfLayers(GetInst().GetfNofLayers());
-        this->CalEvent()->SetTilesizeX(GetInst().GettileLenX());
-        this->CalEvent()->SetTilesizeY(GetInst().GettileLenY());
+        this->CalEvent()->SetOuterGapThickness(GetInst().GetOutergapThickness());
+        this->CalEvent()->SetOuterAbsoThickness(GetInst().GetOuterabsoThickness());
+        this->CalEvent()->SetNumberOfOuterLayers(GetInst().GetfNofOuterLayers());
+        this->CalEvent()->SetOuterTilesizeX(GetInst().GetOutertileLenX());
+        this->CalEvent()->SetOuterTilesizeY(GetInst().GetOutertileLenY());
+        this->CalEvent()->SetOuterAbsFirst(GetInst().GetOuterAbsFirst());
+
         this->CalEvent()->SetcalsizeXY(GetInst().GetcalorSizeXY());
+        this->CalEvent()->SetPVesselThickness(GetInst().GetPvesselThickness());
+        this->CalEvent()->SetairgapThickness(GetInst().GetairgapThickness());
+
         this->CalEvent()->SetEnergyPhoton1(GetEInst().GetEnergyPh1());
         this->CalEvent()->SetEnergyPhoton2(GetEInst().GetEnergyPh2());
+
+        this->CalEvent()->SetEnergyPrimary(event->GetPrimaryVertex()->GetPrimary()->GetKineticEnergy());
+        //std::cout<<event->GetPrimaryVertex()->GetPrimary()->GetKineticEnergy()<<std::endl;
         TVector3 vertpos(event->GetPrimaryVertex()->GetPosition().getX(),event->GetPrimaryVertex()->GetPosition().getY(),event->GetPrimaryVertex()->GetPosition().getZ());
         this->CalEvent()->SetGunPos(vertpos);
 
@@ -240,8 +253,6 @@ void B4cEventAction::EndOfEventAction(const G4Event* event)
 
         G4ThreeVector mom2=GetEInst().GetMomPh2();
         this->CalEvent()->SetMomentumPh2(mom2.getX(), mom2.getY(),mom2.getZ());
-
-
 
         //this->CalEvent()->SetMomentumPh2();
         //std::cout<<this->CalEvent()->EventNo()<<std::endl;
@@ -256,7 +267,7 @@ void B4cEventAction::EndOfEventAction(const G4Event* event)
         // int segph1=0;
         // int segph2=0;
 
-        //  bool goodevent=false;
+        // bool goodevent=false;
 
         if(GetEInst().GetTD()==false) {
                 auto ent=gapHC->entries();
@@ -270,7 +281,8 @@ void B4cEventAction::EndOfEventAction(const G4Event* event)
                                                  tHit->GetZ(),
                                                  tHit->GetCalorSeg(),
                                                  tHit->GetEdep(),
-                                                 tHit->GetPhotonNumber());
+                                                 tHit->GetPhotonNumber(),
+                                                 tHit->GetCalorPart());
 
                                 // if(tHit->GetPhotonNumber()==1) {
                                 //

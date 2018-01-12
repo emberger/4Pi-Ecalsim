@@ -106,6 +106,9 @@ void B4cDetectorConstruction::DefineMaterials()
         auto nistManager = G4NistManager::Instance();
         nistManager->FindOrBuildMaterial("G4_Pb");
         nistManager->FindOrBuildMaterial("G4_Cu");
+        nistManager->FindOrBuildMaterial("G4_POLYSTYRENE");
+        nistManager->FindOrBuildMaterial("G4_Ti");
+        nistManager->FindOrBuildMaterial("G4_AIR");
 
 
         //BGO material
@@ -166,6 +169,16 @@ void B4cDetectorConstruction::DefineMaterials()
         FR4->AddMaterial(TBBPA, 0.07);
         FR4->AddMaterial(nistManager->FindOrBuildMaterial("G4_Cu"),0.01);
 
+        //Steel Material
+        G4double SteelDensity=8.027*g/cm3;
+        G4int Steelcomponents=5;
+        G4Material * Steel=new G4Material("Steel", SteelDensity, Steelcomponents);
+
+        Steel->AddMaterial(nistManager->FindOrBuildMaterial("G4_Fe"),0.709 );
+        Steel->AddMaterial(nistManager->FindOrBuildMaterial("G4_Cr"),0.18 );
+        Steel->AddMaterial(nistManager->FindOrBuildMaterial("G4_Ni"), 0.10);
+        Steel->AddMaterial(nistManager->FindOrBuildMaterial("G4_Mn"), 0.01);
+        Steel->AddMaterial(nistManager->FindOrBuildMaterial("G4_C"), 0.001);
 
         // Liquid argon material
         G4double a; // mass of a mole;
@@ -193,10 +206,14 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
 
         // Get materials
         auto defaultMaterial = G4Material::GetMaterial("Galactic");
+
         auto absorberMaterial = G4Material::GetMaterial("G4_Pb");
-        auto gapMaterial = G4Material::GetMaterial("pen");
-        auto crystalMaterial = G4Material::GetMaterial("LYSO");
-        auto pcbMaterial = G4Material::GetMaterial("FR4");
+
+        auto gapMaterial = G4Material::GetMaterial("G4_POLYSTYRENE");
+
+        auto airMaterial = G4Material::GetMaterial("G4_AIR");
+
+        auto PVesselMaterial = G4Material::GetMaterial("G4_Ti");
 
         if ( !defaultMaterial || !absorberMaterial || !gapMaterial ) {
                 G4ExceptionDescription msg;
@@ -230,344 +247,596 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
                 fCheckOverlaps);   // checking overlaps
 
         //
-        // Calorimeter
+        // Detector
         //
-        auto calorimeterS
-                = new G4Box("Calorimeter", // its name
-                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetcalorThickness()/2); // its size
+        auto DetectorS
+                = new G4Box("Detector", // its name
+                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetDetectorThickness()/2); // its size
 
-        auto calorLV
+        auto DetectorLV
                 = new G4LogicalVolume(
-                calorimeterS,      // its solid
+                DetectorS,      // its solid
                 defaultMaterial,   // its material
-                "Calorimeter");    // its name
-        G4ThreeVector seg1(0*mm,0*mm,((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcalorThickness()/2))*mm);
+                "Detector");    // its name
+
+        G4ThreeVector segD(0*mm,0*mm,(GetInst().GetDetectorThickness()/2)*mm);
+
         new G4PVPlacement(
                 0,                 // no rotation
-                seg1,   // at (0,0,0)
-                calorLV,           // its logical volume
-                "Calorimeter",     // its name
+                segD,
+                DetectorLV,           // its logical volume
+                "Detector",     // its name
                 worldLV,           // its mother  volume
                 false,             // no boolean operation
                 1,                 // copy number
                 fCheckOverlaps);// checking overlaps
 
-        G4RotationMatrix * myrotation2= new G4RotationMatrix();
-        myrotation2->rotateX(180.*deg);
-        myrotation2->rotateY(0.*deg);
-        myrotation2->rotateZ(0.*deg);
-        G4ThreeVector seg2(0*mm,0*mm,-((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcalorThickness()/2))*mm);
-        new G4PVPlacement(
-                myrotation2,                                 // no rotation
-                seg2,                   // at (0,0,0)
-                calorLV,                           // its logical volume
-                "Calorimeter",                     // its name
-                worldLV,                           // its mother  volume
-                false,                             // no boolean operation
-                2,                                 // copy number
-                fCheckOverlaps);
-        // checking overlaps
-        G4RotationMatrix * myrotation3= new G4RotationMatrix();
-        myrotation3->rotateX(90.*deg);
-        myrotation3->rotateY(0.*deg);
-        myrotation3->rotateZ(0.*deg);
-        G4ThreeVector seg3(0*mm,((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcalorThickness()/2))*mm,0*mm);
-        new G4PVPlacement(
-                myrotation3,                                         // no rotation
-                seg3,                           // at (0,0,0)
-                calorLV,                                   // its logical volume
-                "Calorimeter",                             // its name
-                worldLV,                                   // its mother  volume
-                false,                                     // no boolean operation
-                3,                                         // copy number
-                fCheckOverlaps);
-        // checking overlaps
-        G4RotationMatrix * myrotation4= new G4RotationMatrix();
-        myrotation4->rotateX(270.*deg);
-        myrotation4->rotateY(0.*deg);
-        myrotation4->rotateZ(0.*deg);
-        G4ThreeVector seg4(0*mm,-((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcalorThickness()/2))*mm,0*mm);
-        new G4PVPlacement(
-                myrotation4,                                                 // no rotation
-                seg4,                                   // at (0,0,0)
-                calorLV,                                           // its logical volume
-                "Calorimeter",                                     // its name
-                worldLV,                                           // its mother  volume
-                false,                                             // no boolean operation
-                4,                                                 // copy number
-                fCheckOverlaps);                                   // checking overlaps
-
-        G4RotationMatrix * myrotation5= new G4RotationMatrix();
-        myrotation5->rotateX(0.*deg);
-        myrotation5->rotateY(270.*deg);
-        myrotation5->rotateZ(0.*deg);
-        G4ThreeVector seg5(((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcalorThickness()/2))*mm,0*mm,0*mm);
-        new G4PVPlacement(
-                myrotation5,                                                         // no rotation
-                seg5,                                           // at (0,0,0)
-                calorLV,                                                   // its logical volume
-                "Calorimeter",                                             // its name
-                worldLV,                                                   // its mother  volume
-                false,                                                     // no boolean operation
-                5,                                                         // copy number
-                fCheckOverlaps);                                           // checking overlaps
-
-        G4RotationMatrix * myrotation6= new G4RotationMatrix();
-        myrotation6->rotateX(0.*deg);
-        myrotation6->rotateY(90.*deg);
-        myrotation6->rotateZ(0.*deg);
-        G4ThreeVector seg6(-((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcalorThickness()/2))*mm,0*mm,0*mm);
-        new G4PVPlacement(
-                myrotation6,                                                                 // no rotation
-                seg6,                                                   // at (0,0,0)
-                calorLV,                                                           // its logical volume
-                "Calorimeter",                                                     // its name
-                worldLV,                                                           // its mother  volume
-                false,                                                             // no boolean operation
-                6,                                                                 // copy number
-                fCheckOverlaps);                                                   // checking overlaps
-
-
-
-        auto Shield
-                =  new G4Box("Shield", GetInst().GetcalorSizeXY()/2, GetInst().GetcalorThickness()/2,GetInst().GetcalorThickness()/2);
-
-        auto ShieldLV
-                = new G4LogicalVolume(Shield, absorberMaterial, "Shield");
-
-        G4ThreeVector abs1(0,(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2 );
-        new G4PVPlacement(
-                0,                                                                         // no rotation
-                abs1,                                                           // at (0,0,0)
-                ShieldLV,                                                                   // its logical volume
-                "Shield",                                                             // its name
-                worldLV,                                                                   // its mother  volume
-                false,                                                                     // no boolean operation
-                6,                                                                         // copy number
-                fCheckOverlaps);
-
-        G4ThreeVector abs2(0,-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2 );
-        new G4PVPlacement(
-                0,                                                                                 // no rotation
-                abs2,                                                                   // at (0,0,0)
-                ShieldLV,                                                                           // its logical volume
-                "Shield",                                                                     // its name
-                worldLV,                                                                           // its mother  volume
-                false,                                                                             // no boolean operation
-                6,                                                                                 // copy number
-                fCheckOverlaps);
-
-        G4ThreeVector abs3(0,GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2,-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2));
-        new G4PVPlacement(
-                0,                                                                                         // no rotation
-                abs3,                                                                           // at (0,0,0)
-                ShieldLV,                                                                                   // its logical volume
-                "Shield",                                                                             // its name
-                worldLV,                                                                                   // its mother  volume
-                false,                                                                                     // no boolean operation
-                6,                                                                                         // copy number
-                fCheckOverlaps);
-
-        G4ThreeVector abs4(0,-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2) );
-        new G4PVPlacement(
-                0,                                                                                                 // no rotation
-                abs4,                                                                                   // at (0,0,0)
-                ShieldLV,                                                                                           // its logical volume
-                "Shield",                                                                                     // its name
-                worldLV,                                                                                           // its mother  volume
-                false,                                                                                             // no boolean operation
-                6,                                                                                                 // copy number
-                fCheckOverlaps);
-
-        G4RotationMatrix * shieldrot= new G4RotationMatrix();
-        shieldrot->rotateX(0. *deg);
-        shieldrot->rotateY(0. *deg);
-        shieldrot->rotateZ(90. *deg);
-
-        G4ThreeVector abs5((GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0,(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2) );
-        new G4PVPlacement(
-                shieldrot,                                                                                                         // no rotation
-                abs5,                                                                                           // at (0,0,0)
-                ShieldLV,                                                                                                   // its logical volume
-                "Shield",                                                                                             // its name
-                worldLV,                                                                                                   // its mother  volume
-                false,                                                                                                     // no boolean operation
-                6,                                                                                                         // copy number
-                fCheckOverlaps);
-
-        G4ThreeVector abs6(-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0,(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2) );
-        new G4PVPlacement(
-                shieldrot,                                                                                                                 // no rotation
-                abs6,                                                                                                   // at (0,0,0)
-                ShieldLV,                                                                                                           // its logical volume
-                "Shield",                                                                                                     // its name
-                worldLV,                                                                                                           // its mother  volume
-                false,                                                                                                             // no boolean operation
-                6,                                                                                                                 // copy number
-                fCheckOverlaps);
-
-        G4ThreeVector abs7((GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0,-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2) );
-        new G4PVPlacement(
-                shieldrot,                                                                                                                         // no rotation
-                abs7,                                                                                                           // at (0,0,0)
-                ShieldLV,                                                                                                                   // its logical volume
-                "Shield",                                                                                                             // its name
-                worldLV,                                                                                                                   // its mother  volume
-                false,                                                                                                                     // no boolean operation
-                6,                                                                                                                         // copy number
-                fCheckOverlaps);
-
-        G4ThreeVector abs8(-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0,-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2) );
-        new G4PVPlacement(
-                shieldrot,                                                                                                                                 // no rotation
-                abs8,                                                                                                                   // at (0,0,0)
-                ShieldLV,                                                                                                                           // its logical volume
-                "Shield",                                                                                                                     // its name
-                worldLV,                                                                                                                           // its mother  volume
-                false,                                                                                                                             // no boolean operation
-                6,                                                                                                                                 // copy number
-                fCheckOverlaps);
-
-
-        auto Shieldlong
-                =  new G4Box("Shieldlong", GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness(), GetInst().GetcalorThickness()/2,GetInst().GetcalorThickness()/2);
-
-        auto ShieldlongLV
-                = new G4LogicalVolume(Shieldlong, absorberMaterial, "Shieldlong");
-        G4RotationMatrix * shieldrot1= new G4RotationMatrix();
-        shieldrot1->rotateX(0. *deg);
-        shieldrot1->rotateY(90. *deg);
-        shieldrot1->rotateZ(0. *deg);
-
-        G4ThreeVector abs9((GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0 );
-        new G4PVPlacement(
-                shieldrot1,                                                                                                                                 // no rotation
-                abs9,                                                                                                                   // at (0,0,0)
-                ShieldlongLV,                                                                                                                           // its logical volume
-                "Shieldlong",                                                                                                                     // its name
-                worldLV,                                                                                                                           // its mother  volume
-                false,                                                                                                                             // no boolean operation
-                6,                                                                                                                                 // copy number
-                fCheckOverlaps);
-
-        G4ThreeVector abs10(-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0 );
-        new G4PVPlacement(
-                shieldrot1,                                                                                                                                         // no rotation
-                abs10,                                                                                                                           // at (0,0,0)
-                ShieldlongLV,                                                                                                                                   // its logical volume
-                "Shieldlong",                                                                                                                             // its name
-                worldLV,                                                                                                                                   // its mother  volume
-                false,                                                                                                                                     // no boolean operation
-                6,                                                                                                                                         // copy number
-                fCheckOverlaps);
-
-        G4ThreeVector abs11((GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0 );
-        new G4PVPlacement(
-                shieldrot1,                                                                                                                                                 // no rotation
-                abs11,                                                                                                                                   // at (0,0,0)
-                ShieldlongLV,                                                                                                                                           // its logical volume
-                "Shieldlong",                                                                                                                                     // its name
-                worldLV,                                                                                                                                           // its mother  volume
-                false,                                                                                                                                             // no boolean operation
-                6,                                                                                                                                                 // copy number
-                fCheckOverlaps);
-
-        G4ThreeVector abs12(-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0 );
-        new G4PVPlacement(
-                shieldrot1,                                                                                                                                                         // no rotation
-                abs12,                                                                                                                                           // at (0,0,0)
-                ShieldlongLV,                                                                                                                                                   // its logical volume
-                "Shieldlong",                                                                                                                                             // its name
-                worldLV,                                                                                                                                                   // its mother  volume
-                false,                                                                                                                                                     // no boolean operation
-                6,                                                                                                                                                         // copy number
-                fCheckOverlaps);
-
-
-
-
-
 
         //
-        // Layer
+        // CalorimeterInside
         //
+        auto calorimeterInsideS
+                = new G4Box("CalorimeterInside",       // its name
+                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetInnercalorThickness()/2);       // its size
 
-        auto layerS
-                = new G4Box("Layer", // its name
-                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetlayerThickness()/2); //its size
-
-        auto layerLV
+        auto calorInsideLV
                 = new G4LogicalVolume(
-                layerS,            // its solid
-                defaultMaterial,   // its material
-                "Layer");          // its name
+                calorimeterInsideS,            // its solid
+                defaultMaterial,         // its material
+                "CalorimeterInside");          // its name
+
+        G4ThreeVector segI(0*mm,0*mm,(-GetInst().GetDetectorThickness()/2+GetInst().GetInnercalorThickness()/2)*mm);
+
+        new G4PVPlacement(
+                0,                       // no rotation
+                segI,
+                calorInsideLV,                 // its logical volume
+                "CalorimeterInside",           // its name
+                DetectorLV,                 // its mother  volume
+                false,                   // no boolean operation
+                1,                       // copy number
+                fCheckOverlaps);      // checking overlaps
+        //
+        // PressureVessel
+        //
+        auto PressureVesselS
+                = new G4Box("PressureVessel",                       // its name
+                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetPvesselThickness()/2);                       // its size
+
+        auto PressureVesselLV
+                = new G4LogicalVolume(
+                PressureVesselS,                            // its solid
+                PVesselMaterial,                         // its material
+                "PressureVessel");                          // its name
+
+        G4ThreeVector segP(0*mm,0*mm,(-GetInst().GetDetectorThickness()/2+GetInst().GetInnercalorThickness()+GetInst().GetPvesselThickness()/2)*mm);
+
+        new G4PVPlacement(
+                0,                                       // no rotation
+                segP,
+                PressureVesselLV,                                 // its logical volume
+                "PressureVessel",                           // its name
+                DetectorLV,                                 // its mother  volume
+                false,                                   // no boolean operation
+                1,                                       // copy number
+                fCheckOverlaps);                      // checking overlaps
+
+        //
+        // CalorimeterOutside
+        //
+        auto calorimeterOutsideS
+                = new G4Box("CalorimeterOutside",       // its name
+                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetOutercalorThickness()/2);       // its size
+
+        auto calorOutsideLV
+                = new G4LogicalVolume(
+                calorimeterOutsideS,            // its solid
+                defaultMaterial,         // its material
+                "CalorimeterOutside");          // its name
+
+        G4ThreeVector segO(0*mm,0*mm,(-GetInst().GetDetectorThickness()/2+GetInst().GetInnercalorThickness()+GetInst().GetPvesselThickness()+GetInst().GetOutercalorThickness()/2)*mm);
+
+        new G4PVPlacement(
+                0,                       // no rotation
+                segO,
+                calorOutsideLV,                 // its logical volume
+                "CalorimeterOutside",           // its name
+                DetectorLV,                 // its mother  volume
+                false,                   // no boolean operation
+                1,                       // copy number
+                fCheckOverlaps);      // checking overlaps
+
+
+
+
+
+
+        // G4RotationMatrix * myrotation2= new G4RotationMatrix();
+        // myrotation2->rotateX(180.*deg);
+        // myrotation2->rotateY(0.*deg);
+        // myrotation2->rotateZ(0.*deg);
+        // G4ThreeVector seg2(0*mm,0*mm,-((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcalorThickness()/2))*mm);
+        // new G4PVPlacement(
+        //         myrotation2,                                 // no rotation
+        //         seg2,                   // at (0,0,0)
+        //         calorLV,                           // its logical volume
+        //         "Calorimeter",                     // its name
+        //         worldLV,                           // its mother  volume
+        //         false,                             // no boolean operation
+        //         2,                                 // copy number
+        //         fCheckOverlaps);
+        // // checking overlaps
+        // G4RotationMatrix * myrotation3= new G4RotationMatrix();
+        // myrotation3->rotateX(90.*deg);
+        // myrotation3->rotateY(0.*deg);
+        // myrotation3->rotateZ(0.*deg);
+        // G4ThreeVector seg3(0*mm,((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcalorThickness()/2))*mm,0*mm);
+        // new G4PVPlacement(
+        //         myrotation3,                                         // no rotation
+        //         seg3,                           // at (0,0,0)
+        //         calorLV,                                   // its logical volume
+        //         "Calorimeter",                             // its name
+        //         worldLV,                                   // its mother  volume
+        //         false,                                     // no boolean operation
+        //         3,                                         // copy number
+        //         fCheckOverlaps);
+        // // checking overlaps
+        // G4RotationMatrix * myrotation4= new G4RotationMatrix();
+        // myrotation4->rotateX(270.*deg);
+        // myrotation4->rotateY(0.*deg);
+        // myrotation4->rotateZ(0.*deg);
+        // G4ThreeVector seg4(0*mm,-((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcalorThickness()/2))*mm,0*mm);
+        // new G4PVPlacement(
+        //         myrotation4,                                                 // no rotation
+        //         seg4,                                   // at (0,0,0)
+        //         calorLV,                                           // its logical volume
+        //         "Calorimeter",                                     // its name
+        //         worldLV,                                           // its mother  volume
+        //         false,                                             // no boolean operation
+        //         4,                                                 // copy number
+        //         fCheckOverlaps);                                   // checking overlaps
+        //
+        // G4RotationMatrix * myrotation5= new G4RotationMatrix();
+        // myrotation5->rotateX(0.*deg);
+        // myrotation5->rotateY(270.*deg);
+        // myrotation5->rotateZ(0.*deg);
+        // G4ThreeVector seg5(((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcalorThickness()/2))*mm,0*mm,0*mm);
+        // new G4PVPlacement(
+        //         myrotation5,                                                         // no rotation
+        //         seg5,                                           // at (0,0,0)
+        //         calorLV,                                                   // its logical volume
+        //         "Calorimeter",                                             // its name
+        //         worldLV,                                                   // its mother  volume
+        //         false,                                                     // no boolean operation
+        //         5,                                                         // copy number
+        //         fCheckOverlaps);                                           // checking overlaps
+        //
+        // G4RotationMatrix * myrotation6= new G4RotationMatrix();
+        // myrotation6->rotateX(0.*deg);
+        // myrotation6->rotateY(90.*deg);
+        // myrotation6->rotateZ(0.*deg);
+        // G4ThreeVector seg6(-((GetInst().GetcalorSizeXY()/2)+(GetInst().GetcalorThickness()/2))*mm,0*mm,0*mm);
+        // new G4PVPlacement(
+        //         myrotation6,                                                                 // no rotation
+        //         seg6,                                                   // at (0,0,0)
+        //         calorLV,                                                           // its logical volume
+        //         "Calorimeter",                                                     // its name
+        //         worldLV,                                                           // its mother  volume
+        //         false,                                                             // no boolean operation
+        //         6,                                                                 // copy number
+        //         fCheckOverlaps);                                                   // checking overlaps
+        //
+        //
+
+        // auto Shield
+        //         =  new G4Box("Shield", GetInst().GetcalorSizeXY()/2, GetInst().GetcalorThickness()/2,GetInst().GetcalorThickness()/2);
+        //
+        // auto ShieldLV
+        //         = new G4LogicalVolume(Shield, absorberMaterial, "Shield");
+        //
+        // G4ThreeVector abs1(0,(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2 );
+        // new G4PVPlacement(
+        //         0,                                                                         // no rotation
+        //         abs1,                                                           // at (0,0,0)
+        //         ShieldLV,                                                                   // its logical volume
+        //         "Shield",                                                             // its name
+        //         worldLV,                                                                   // its mother  volume
+        //         false,                                                                     // no boolean operation
+        //         6,                                                                         // copy number
+        //         fCheckOverlaps);
+        //
+        // G4ThreeVector abs2(0,-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2 );
+        // new G4PVPlacement(
+        //         0,                                                                                 // no rotation
+        //         abs2,                                                                   // at (0,0,0)
+        //         ShieldLV,                                                                           // its logical volume
+        //         "Shield",                                                                     // its name
+        //         worldLV,                                                                           // its mother  volume
+        //         false,                                                                             // no boolean operation
+        //         6,                                                                                 // copy number
+        //         fCheckOverlaps);
+        //
+        // G4ThreeVector abs3(0,GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2,-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2));
+        // new G4PVPlacement(
+        //         0,                                                                                         // no rotation
+        //         abs3,                                                                           // at (0,0,0)
+        //         ShieldLV,                                                                                   // its logical volume
+        //         "Shield",                                                                             // its name
+        //         worldLV,                                                                                   // its mother  volume
+        //         false,                                                                                     // no boolean operation
+        //         6,                                                                                         // copy number
+        //         fCheckOverlaps);
+        //
+        // G4ThreeVector abs4(0,-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2) );
+        // new G4PVPlacement(
+        //         0,                                                                                                 // no rotation
+        //         abs4,                                                                                   // at (0,0,0)
+        //         ShieldLV,                                                                                           // its logical volume
+        //         "Shield",                                                                                     // its name
+        //         worldLV,                                                                                           // its mother  volume
+        //         false,                                                                                             // no boolean operation
+        //         6,                                                                                                 // copy number
+        //         fCheckOverlaps);
+        //
+        // G4RotationMatrix * shieldrot= new G4RotationMatrix();
+        // shieldrot->rotateX(0. *deg);
+        // shieldrot->rotateY(0. *deg);
+        // shieldrot->rotateZ(90. *deg);
+        //
+        // G4ThreeVector abs5((GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0,(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2) );
+        // new G4PVPlacement(
+        //         shieldrot,                                                                                                         // no rotation
+        //         abs5,                                                                                           // at (0,0,0)
+        //         ShieldLV,                                                                                                   // its logical volume
+        //         "Shield",                                                                                             // its name
+        //         worldLV,                                                                                                   // its mother  volume
+        //         false,                                                                                                     // no boolean operation
+        //         6,                                                                                                         // copy number
+        //         fCheckOverlaps);
+        //
+        // G4ThreeVector abs6(-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0,(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2) );
+        // new G4PVPlacement(
+        //         shieldrot,                                                                                                                 // no rotation
+        //         abs6,                                                                                                   // at (0,0,0)
+        //         ShieldLV,                                                                                                           // its logical volume
+        //         "Shield",                                                                                                     // its name
+        //         worldLV,                                                                                                           // its mother  volume
+        //         false,                                                                                                             // no boolean operation
+        //         6,                                                                                                                 // copy number
+        //         fCheckOverlaps);
+        //
+        // G4ThreeVector abs7((GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0,-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2) );
+        // new G4PVPlacement(
+        //         shieldrot,                                                                                                                         // no rotation
+        //         abs7,                                                                                                           // at (0,0,0)
+        //         ShieldLV,                                                                                                                   // its logical volume
+        //         "Shield",                                                                                                             // its name
+        //         worldLV,                                                                                                                   // its mother  volume
+        //         false,                                                                                                                     // no boolean operation
+        //         6,                                                                                                                         // copy number
+        //         fCheckOverlaps);
+        //
+        // G4ThreeVector abs8(-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0,-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2) );
+        // new G4PVPlacement(
+        //         shieldrot,                                                                                                                                 // no rotation
+        //         abs8,                                                                                                                   // at (0,0,0)
+        //         ShieldLV,                                                                                                                           // its logical volume
+        //         "Shield",                                                                                                                     // its name
+        //         worldLV,                                                                                                                           // its mother  volume
+        //         false,                                                                                                                             // no boolean operation
+        //         6,                                                                                                                                 // copy number
+        //         fCheckOverlaps);
+        //
+        //
+        // auto Shieldlong
+        //         =  new G4Box("Shieldlong", GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness(), GetInst().GetcalorThickness()/2,GetInst().GetcalorThickness()/2);
+        //
+        // auto ShieldlongLV
+        //         = new G4LogicalVolume(Shieldlong, absorberMaterial, "Shieldlong");
+        // G4RotationMatrix * shieldrot1= new G4RotationMatrix();
+        // shieldrot1->rotateX(0. *deg);
+        // shieldrot1->rotateY(90. *deg);
+        // shieldrot1->rotateZ(0. *deg);
+        //
+        // G4ThreeVector abs9((GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0 );
+        // new G4PVPlacement(
+        //         shieldrot1,                                                                                                                                 // no rotation
+        //         abs9,                                                                                                                   // at (0,0,0)
+        //         ShieldlongLV,                                                                                                                           // its logical volume
+        //         "Shieldlong",                                                                                                                     // its name
+        //         worldLV,                                                                                                                           // its mother  volume
+        //         false,                                                                                                                             // no boolean operation
+        //         6,                                                                                                                                 // copy number
+        //         fCheckOverlaps);
+        //
+        // G4ThreeVector abs10(-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0 );
+        // new G4PVPlacement(
+        //         shieldrot1,                                                                                                                                         // no rotation
+        //         abs10,                                                                                                                           // at (0,0,0)
+        //         ShieldlongLV,                                                                                                                                   // its logical volume
+        //         "Shieldlong",                                                                                                                             // its name
+        //         worldLV,                                                                                                                                   // its mother  volume
+        //         false,                                                                                                                                     // no boolean operation
+        //         6,                                                                                                                                         // copy number
+        //         fCheckOverlaps);
+        //
+        // G4ThreeVector abs11((GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0 );
+        // new G4PVPlacement(
+        //         shieldrot1,                                                                                                                                                 // no rotation
+        //         abs11,                                                                                                                                   // at (0,0,0)
+        //         ShieldlongLV,                                                                                                                                           // its logical volume
+        //         "Shieldlong",                                                                                                                                     // its name
+        //         worldLV,                                                                                                                                           // its mother  volume
+        //         false,                                                                                                                                             // no boolean operation
+        //         6,                                                                                                                                                 // copy number
+        //         fCheckOverlaps);
+        //
+        // G4ThreeVector abs12(-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),-1*(GetInst().GetcalorSizeXY()/2+GetInst().GetcalorThickness()/2),0 );
+        // new G4PVPlacement(
+        //         shieldrot1,                                                                                                                                                         // no rotation
+        //         abs12,                                                                                                                                           // at (0,0,0)
+        //         ShieldlongLV,                                                                                                                                                   // its logical volume
+        //         "Shieldlong",                                                                                                                                             // its name
+        //         worldLV,                                                                                                                                                   // its mother  volume
+        //         false,                                                                                                                                                     // no boolean operation
+        //         6,                                                                                                                                                         // copy number
+        //         fCheckOverlaps);
+        //
+        //
+
+
+
+
+
+        //
+        // InnerLayer
+        //
+
+        auto InnerlayerS
+                = new G4Box("InnerLayer",           // its name
+                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetInnerlayerThickness()/2);           //its size
+
+        auto InnerlayerLV
+                = new G4LogicalVolume(
+                InnerlayerS,                      // its solid
+                defaultMaterial,             // its material
+                "InnerLayer");                    // its name
 
         new G4PVReplica(
-                "Layer",           // its name
-                layerLV,           // its logical volume
-                calorLV,           // its mother
+                "InnerLayer",                     // its name
+                InnerlayerLV,                     // its logical volume
+                calorInsideLV,                     // its mother
+                kZAxis,                      // axis of replication
+                GetInst().GetfNofInnerLayers(),                   // number of replica
+                GetInst().GetInnerlayerThickness());             // witdth of replica
+
+        //
+        //AirGap
+        //
+
+        auto AirGapS
+                = new G4Box("AirGap",                   // its name
+                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetairgapThickness()/2);                   // its size
+
+        auto AirGapLV
+                = new G4LogicalVolume(
+                AirGapS,                           // its solid
+                airMaterial,                   // its material
+                "AirGapLV");                           // its name
+
+
+        new G4PVPlacement(
+                0,                                   // no rotation
+                G4ThreeVector(0., 0., (GetInst().GetInnerlayerThickness()/2)-GetInst().GetairgapThickness()/2),                           // its position
+                AirGapLV,                           // its logical volume
+                "InnerAirGap",                              // its name
+                InnerlayerLV,                             // its mother  volume
+                false,                               // no boolean operation
+                0,                                   // copy number
+                fCheckOverlaps);                           // checking overlaps
+
+
+        //
+        // InnerAbsorber
+        //
+        auto InnerabsorberS
+                = new G4Box("InnerAbso",           // its name
+                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetInnerabsoThickness()/2);           // its size
+
+        auto InnerabsorberLV
+                = new G4LogicalVolume(
+                InnerabsorberS,                   // its solid
+                absorberMaterial,            // its material
+                "InnerAbsoLV");                   // its name
+
+        if(GetInst().GetInnerAbsFirst()) {
+                new G4PVPlacement(
+                        0,                   // no rotation
+                        G4ThreeVector(0., 0.,-GetInst().GetInnerlayerThickness()/2+GetInst().GetInnerabsoThickness()/2 ),           // its position
+                        InnerabsorberLV,           // its logical volume
+                        "InnerAbso",              // its name
+                        InnerlayerLV,             // its mother  volume
+                        false,               // no boolean operation
+                        0,                   // copy number
+                        fCheckOverlaps);           // checking overlaps
+        }
+        else{
+                new G4PVPlacement(
+                        0,             // no rotation
+                        G4ThreeVector(0., 0., -GetInst().GetInnerlayerThickness()/2+GetInst().GetInnergapThickness()+GetInst().GetInnerabsoThickness()/2),           // its position
+                        InnerabsorberLV,           // its logical volume
+                        "InnerAbso",           // its name
+                        InnerlayerLV,           // its mother  volume
+                        false,           // no boolean operation
+                        0,             // copy number
+                        fCheckOverlaps);           // checking overlaps
+        }
+        //
+        // InnerGap
+        //
+        auto InnergapS
+                = new G4Box("InnerGap",           // its name
+                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetInnergapThickness()/2);           // its size
+
+        auto InnergapLV
+                = new G4LogicalVolume(
+                InnergapS,                        // its solid
+                gapMaterial,                 // its material
+                "InnerGapLV");                    // its name
+
+
+        if(GetInst().GetInnerAbsFirst()) {
+                new G4PVPlacement(
+                        0,                   // no rotation
+                        G4ThreeVector(0., 0., -GetInst().GetInnerlayerThickness()/2+GetInst().GetInnerabsoThickness()+GetInst().GetInnergapThickness()/2),           // its position
+                        InnergapLV,               // its logical volume
+                        "InnerGap",               // its name
+                        InnerlayerLV,             // its mother  volume
+                        false,               // no boolean operation
+                        0,                   // copy number
+                        fCheckOverlaps);           // checking overlaps
+        }
+        else{
+                new G4PVPlacement(
+                        0,             // no rotation
+                        G4ThreeVector(0., 0., -GetInst().GetInnerlayerThickness()/2+GetInst().GetInnergapThickness()/2),           // its position
+                        InnergapLV,           // its logical volume
+                        "InnerGap",           // its name
+                        InnerlayerLV,           // its mother  volume
+                        false,           // no boolean operation
+                        0,             // copy number
+                        fCheckOverlaps);           // checking overlaps
+
+        }
+
+
+        //
+        // OuterLayer
+        //
+
+        auto OuterlayerS
+                = new G4Box("OuterLayer", // its name
+                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetOuterlayerThickness()/2); //its size
+
+        auto OuterlayerLV
+                = new G4LogicalVolume(
+                OuterlayerS,            // its solid
+                defaultMaterial,   // its material
+                "OuterLayer");          // its name
+
+        new G4PVReplica(
+                "OuterLayer",           // its name
+                OuterlayerLV,           // its logical volume
+                calorOutsideLV,           // its mother
                 kZAxis,            // axis of replication
-                GetInst().GetfNofLayers(),         // number of replica
-                GetInst().GetlayerThickness());   // witdth of replica
+                GetInst().GetfNofOuterLayers(),         // number of replica
+                GetInst().GetOuterlayerThickness());   // witdth of replica
+
+
 
         //
-        // Absorber
+        //OuterAirGap
         //
-        auto absorberS
-                = new G4Box("Abso", // its name
-                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetabsoThickness()/2); // its size
-
-        auto absorberLV
-                = new G4LogicalVolume(
-                absorberS,         // its solid
-                absorberMaterial,  // its material
-                "AbsoLV");         // its name
 
         new G4PVPlacement(
-                0,                 // no rotation
-                G4ThreeVector(0., 0., (GetInst().GetgapThickness()/2)),  // its position
-                absorberLV,        // its logical volume
-                "Abso",            // its name
-                layerLV,           // its mother  volume
-                false,             // no boolean operation
-                0,                 // copy number
-                fCheckOverlaps);   // checking overlaps
+                0,                                         // no rotation
+                G4ThreeVector(0., 0., (GetInst().GetInnerlayerThickness()/2)-GetInst().GetairgapThickness()/2),                                 // its position
+                AirGapLV,                                 // its logical volume
+                "OuterAirGap",                                    // its name
+                OuterlayerLV,                                   // its mother  volume
+                false,                                     // no boolean operation
+                0,                                         // copy number
+                fCheckOverlaps);                                 // checking overlaps
 
         //
-        // Gap
+        // OuterAbsorber
         //
-        auto gapS
-                = new G4Box("Gap", // its name
-                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetgapThickness()/2); // its size
 
-        auto gapLV
+        auto OuterabsorberS
+                = new G4Box("OuterAbso",                 // its name
+                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetOuterabsoThickness()/2);                 // its size
+
+        auto OuterabsorberLV
                 = new G4LogicalVolume(
-                gapS,              // its solid
-                gapMaterial,       // its material
-                "GapLV");          // its name
+                OuterabsorberS,                         // its solid
+                absorberMaterial,                  // its material
+                "OuterAbsoLV");                         // its name
 
-        new G4PVPlacement(
-                0,                 // no rotation
-                G4ThreeVector(0., 0., -GetInst().GetabsoThickness()/2),  // its position
-                gapLV,             // its logical volume
-                "Gap",             // its name
-                layerLV,           // its mother  volume
-                false,             // no boolean operation
-                0,                 // copy number
-                fCheckOverlaps);   // checking overlaps
+        if(GetInst().GetOuterAbsFirst()) {
+                new G4PVPlacement(
+                        0,                         // no rotation
+                        G4ThreeVector(0., 0.,-GetInst().GetOuterlayerThickness()/2+GetInst().GetOuterabsoThickness()/2),                 // its position
+                        OuterabsorberLV,                 // its logical volume
+                        "Abso",                    // its name
+                        OuterlayerLV,                   // its mother  volume
+                        false,                     // no boolean operation
+                        0,                         // copy number
+                        fCheckOverlaps);                 // checking overlaps
+        }
+        else{
+                new G4PVPlacement(
+                        0,                   // no rotation
+                        G4ThreeVector(0., 0., -GetInst().GetOuterlayerThickness()/2+GetInst().GetOutergapThickness()+GetInst().GetOuterabsoThickness()/2),                 // its position
+                        OuterabsorberLV,                 // its logical volume
+                        "OuterAbso",                 // its name
+                        OuterlayerLV,                 // its mother  volume
+                        false,                 // no boolean operation
+                        0,                   // copy number
+                        fCheckOverlaps);                 // checking overlaps
+        }
+
+        //
+        // OuterGap
+        //
+
+        auto OutergapS
+                = new G4Box("OuterGap",                 // its name
+                            GetInst().GetcalorSizeXY()/2, GetInst().GetcalorSizeXY()/2, GetInst().GetOutergapThickness()/2);                 // its size
+
+        auto OutergapLV
+                = new G4LogicalVolume(
+                OutergapS,                              // its solid
+                gapMaterial,                       // its material
+                "OuterGapLV");                          // its name
+
+        if(GetInst().GetOuterAbsFirst()) {
+                new G4PVPlacement(
+                        0,                         // no rotation
+                        G4ThreeVector(0., 0., -GetInst().GetOuterlayerThickness()/2+GetInst().GetOuterabsoThickness()+GetInst().GetOutergapThickness()/2),                 // its position
+                        OutergapLV,                     // its logical volume
+                        "OuterGap",                     // its name
+                        OuterlayerLV,                   // its mother  volume
+                        false,                     // no boolean operation
+                        0,                         // copy number
+                        fCheckOverlaps);                 // checking overlaps
+        }
+        else{
+                new G4PVPlacement(
+                        0,                   // no rotation
+                        G4ThreeVector(0., 0., -GetInst().GetOuterlayerThickness()/2+GetInst().GetOutergapThickness()/2),                 // its position
+                        OutergapLV,                 // its logical volume
+                        "OuterGap",                 // its name
+                        OuterlayerLV,                 // its mother  volume
+                        false,                 // no boolean operation
+                        0,                   // copy number
+                        fCheckOverlaps);                 // checking overlaps
+
+        }
+
+
 
         //
         // print parameters
         //
 
-        G4cout
-                << G4endl
-                << "------------------------------------------------------------" << G4endl
-                << "---> The calorimeter is " << GetInst().GetfNofLayers() << " layers of: [ "
-                << GetInst().GetabsoThickness()/mm << "mm of " << absorberMaterial->GetName()
-                << " + "
-                << GetInst().GetgapThickness()/mm << "mm of " << gapMaterial->GetName() << " ] " << G4endl
-                << "------------------------------------------------------------" << G4endl;
+        // G4cout
+        //         << G4endl
+        //         << "------------------------------------------------------------" << G4endl
+        //         << "---> The calorimeter is " << GetInst().GetfNofLayers() << " layers of: [ "
+        //         << GetInst().GetabsoThickness()/mm << "mm of " << absorberMaterial->GetName()
+        //         << " + "
+        //         << GetInst().GetgapThickness()/mm << "mm of " << gapMaterial->GetName() << " ] " << G4endl
+        //         << "------------------------------------------------------------" << G4endl;
 
         //
         // Visualization attributes
@@ -576,7 +845,7 @@ G4VPhysicalVolume* B4cDetectorConstruction::DefineVolumes()
 
         auto simpleBoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
         simpleBoxVisAtt->SetVisibility(true);
-        calorLV->SetVisAttributes(simpleBoxVisAtt);
+        DetectorLV->SetVisAttributes(simpleBoxVisAtt);
 
         //
         // Always return the physical World
@@ -598,19 +867,16 @@ void B4cDetectorConstruction::ConstructSDandField()
 //  G4SDManager::GetSDMpointer()->AddNewDetector(absoSD);
 //  SetSensitiveDetector("AbsoLV",absoSD);
 
-        auto gapSD
-                = new B4cCalorimeterSD("GapSD", "GapHitsCollection",
-                                       GetInst().GetfNofLayers(),
+auto gapSD
+        = new B4cCalorimeterSD("GapSD", "GapHitsCollection");
 
-                                       GetInst().GettilesPerLayer(),
-                                       GetInst().GetnofTilesX());
+G4SDManager::GetSDMpointer()->AddNewDetector(gapSD);
 
-        G4SDManager::GetSDMpointer()->AddNewDetector(gapSD);
-
-        SetSensitiveDetector("GapLV",gapSD);
-
-
-        gapSD->SetROgeometry(ROGeom);
+SetSensitiveDetector("InnerGapLV",gapSD);
+SetSensitiveDetector("OuterGapLV",gapSD);
+        //
+        //
+        // gapSD->SetROgeometry(ROGeom);
 
         //G4cout<<ROGeom->GetName()<<G4endl;
 

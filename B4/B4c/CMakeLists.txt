@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------------
 # Setup the project
 #
-cmake_minimum_required(VERSION 2.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 project(B4c)
 
 set(CMAKE_PREFIX_PATH $ENV{ROOTSYS})
@@ -17,7 +17,7 @@ set(CMAKE_MODULE_PATH $ENV{ROOTSYS}/etc/cmake)
 #find_package(ROOT REQUIRED COMPONENTS RIO Net Hist Graf Graf3d Gpad Tree Rint Postscript Matrix Physics MathCore Thread Matrix Minuit Minuit2)
 #find_package(ROOT REQUIRED)
 find_package(ROOT REQUIRED COMPONENTS Minuit Minuit2)
-set(ROOT_LIBRARIES ${ROOT_LIBRARIES} -lMinuit -lMinuit2)
+set(ROOT_LIBRARIES ${ROOT_LIBRARIES})
 #include(${ROOT_USE_FILE})
 
 
@@ -62,10 +62,10 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 # Add the executable, and link it to the Geant4 libraries
 #
 add_executable(exampleB4c exampleB4c.cc ${sources} ${headers})
-add_executable(Analysis AnalysisMain.cc ${sources} ${headers})
+# add_executable(Analysis AnalysisMain.cc ${sources} ${headers})
 
 target_link_libraries(exampleB4c ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} )#RootLib)
-target_link_libraries(Analysis ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} )#RootLib)
+# target_link_libraries(Analysis ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} )#RootLib)
 
 #target_link_libraries(exampleB4c ${Geant4_LIBRARIES})
 
@@ -96,4 +96,4 @@ endforeach()
 # Install the executable to 'bin' directory under CMAKE_INSTALL_PREFIX
 #
 install(TARGETS exampleB4c DESTINATION bin)
-install(TARGETS Analysis DESTINATION bin)
+# install(TARGETS Analysis DESTINATION bin)

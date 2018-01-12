@@ -15,12 +15,12 @@ TROOTAnalysis::TROOTAnalysis(TChain* ch){
 
         EcalTree->GetEntry(0);
 
-        GapThickness=Cevent->GapThickness();
-        AbsoThickness=Cevent->AbsoThickness();
-        tiledimX=Cevent->TilesizeX();
-        tiledimY=Cevent->TilesizeY();
-        calsizeXY=Cevent->calsizeXY();
-        nofLayers=Cevent->NumberOfLayers();
+        // GapThickness=Cevent->GapThickness();
+        // AbsoThickness=Cevent->AbsoThickness();
+        // tiledimX=Cevent->TilesizeX();
+        // tiledimY=Cevent->TilesizeY();
+        // calsizeXY=Cevent->calsizeXY();
+        // nofLayers=Cevent->NumberOfLayers();
 
 
         //Double_t EcalSizeXYZ=calsizeXY/2+(GapThickness+AbsoThickness)*nofLayers;

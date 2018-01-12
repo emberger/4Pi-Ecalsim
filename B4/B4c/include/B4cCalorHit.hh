@@ -72,7 +72,7 @@ void SetX(G4int x);
 void SetY(G4int y);
 void SetZ(G4int z);
 void SetCalorSeg(G4int seg);
-
+void SetCalorPart(std::string p);
 
 
 // get methods
@@ -80,7 +80,7 @@ G4double GetEdep() const;
 G4double GetTrackLength() const;
 G4bool GetTouch();
 G4bool GetCellInfo();
-
+std::string GetCalorPart() const;
 G4int GetPhotonNumber();
 
 G4int GetX();
@@ -97,6 +97,7 @@ G4bool fTouched;      // Bool to select interesting cells
 G4bool fCellInfo;     // Bool to distinguish cell info from layered info and total accounting
 G4int Photon;
 
+std::string calpart;
 
 
 G4int Xpos;     //
@@ -182,7 +183,9 @@ inline void B4cCalorHit::SetZ(G4int z){
 inline void B4cCalorHit::SetCalorSeg(G4int seg){
         CalSeg=seg;
 }
-
+inline void B4cCalorHit::SetCalorPart(std::string p){
+  calpart=p;
+}
 
 
 inline G4int B4cCalorHit::GetX(){
@@ -197,6 +200,9 @@ inline G4int B4cCalorHit::GetZ(){
 
 inline G4int B4cCalorHit::GetCalorSeg(){
         return CalSeg;
+}
+inline std::string B4cCalorHit::GetCalorPart() const{
+  return calpart;
 }
 
 
